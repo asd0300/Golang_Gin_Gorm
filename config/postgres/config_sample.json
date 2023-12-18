@@ -1,0 +1,8 @@
+{
+    "DBname": "postgres",
+    "Addr": "127.0.0.1",
+    "Port": 5432,
+    "Username": "postgres",
+    "Name": "postgres",
+    "Password": ""
+}
