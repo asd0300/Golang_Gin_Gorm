@@ -16,7 +16,7 @@ type dbConfig struct {
 
 func getDbConfig() *dbConfig {
 	config := dbConfig{}
-	file := "./config/postgres/config.json"
+	file := "../../config/postgres/config.json"
 	data, err := os.ReadFile(file)
 	err = json.Unmarshal(data, &config)
 	if err != nil {

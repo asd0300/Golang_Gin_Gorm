@@ -34,8 +34,8 @@ func (m *DBClient) Connect() {
 	fmt.Println("Connect success")
 }
 
-func (m *DBClient) Insert(play Player) error {
-	res := m.client.Create(&play)
+func (m *DBClient) Insert(user User) error {
+	res := m.client.Create(user)
 	if res.Error != nil {
 		return res.Error
 	}

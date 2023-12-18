@@ -66,6 +66,7 @@ package main
 import (
 	postgres "GO_test/pkg/postgres"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -100,6 +101,42 @@ func main() {
 		message := name + " is " + action
 		c.String(http.StatusOK, message)
 	})
+	app.POST("/user/create", func(c *gin.Context) {
+		var user postgres.User
+		err := c.ShouldBind(&user)
+		if err != nil {
+			log.Println(err)
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		client := postgres.DBClient{}
+		client.Connect()
+		err = client.Insert(user)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"message": "Create data ok",
+		})
+
+	})
+	app.POST("user/login", func(c *gin.Context) {
+		var user postgres.User
+		err := c.ShouldBind(&user)
+		if err != nil {
+			log.Println(err)
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+	})
 	err := app.Run(":3000")
 	if err != nil {
 		panic(err)
@@ -129,6 +166,15 @@ func ReadAll(client postgres.DBClient) []postgres.Player {
 }
 
 func TestInsert(client postgres.DBClient) {
-	play := postgres.Player{30, "Ben2"}
-	client.Insert(play)
+	// play := postgres.Player{30, "Ben2"}
+	// client.Insert(play)
+}
+
+func Read() {
+	var client = DBConn()
+}
+func DBConn() postgres.DBClient {
+	client := postgres.DBClient{}
+	client.Connect()
+	return client
 }
