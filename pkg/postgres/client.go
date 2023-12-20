@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 
 	"gorm.io/driver/postgres"
@@ -34,13 +35,29 @@ func (m *DBClient) Connect() {
 	fmt.Println("Connect success")
 }
 
-func (m *DBClient) Insert(user User) error {
-	res := m.client.Create(user)
+type Entity interface {
+	SetIdentity()
+}
+
+func (m *DBClient) Insert(entity Entity) error {
+	entity.SetIdentity()
+	res := m.client.Create(entity)
 	if res.Error != nil {
 		return res.Error
 	}
-	fmt.Printf("Insert Success!")
+	fmt.Printf("Insert Success!\n")
 	return nil
+}
+
+func (u *User) SetIdentity() {
+	if u.Name == "ben" {
+		u.Identity = 1
+	} else {
+		u.Identity = 2
+	}
+}
+func (u *Product) SetIdentity() {
+
 }
 
 func (m *DBClient) Get() ([]Player, error) {
@@ -50,6 +67,17 @@ func (m *DBClient) Get() ([]Player, error) {
 		return nil, res.Error
 	}
 	return players, nil
+}
+func (m *DBClient) Find(user User) (bool, error) {
+	res := m.client.Where("name=? AND password=?", user.Name, user.Password).First(&user)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		// Other error occurred
+		return false, res.Error
+	}
+	return true, nil
 }
 
 func (m *DBClient) Update(play Player) error {

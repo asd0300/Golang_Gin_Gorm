@@ -64,10 +64,12 @@ package main
 // }
 
 import (
+	"GO_test/pkg/jwt"
 	postgres "GO_test/pkg/postgres"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -84,7 +86,7 @@ import (
 
 func main() {
 	app := gin.Default()
-	app.GET("/user", func(c *gin.Context) {
+	app.GET("/user", jwt.JWTAuthMiddleware(), func(c *gin.Context) {
 		c.String(200, "/user")
 	})
 	app.GET("hello/:name", func(c *gin.Context) {
@@ -113,7 +115,7 @@ func main() {
 		}
 		client := postgres.DBClient{}
 		client.Connect()
-		err = client.Insert(user)
+		err = client.Insert(&user)
 		if err != nil {
 			c.JSON(400, gin.H{
 				"error": err.Error(),
@@ -125,6 +127,29 @@ func main() {
 		})
 
 	})
+	app.POST("/product/create", func(c *gin.Context) {
+		var product postgres.Product
+		err := c.ShouldBindJSON(&product)
+		if err != nil {
+			log.Println(err)
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		client := postgres.DBClient{}
+		client.Connect()
+		err = client.Insert(&product)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"message": "Create data ok",
+		})
+	})
 	app.POST("user/login", func(c *gin.Context) {
 		var user postgres.User
 		err := c.ShouldBind(&user)
@@ -135,11 +160,50 @@ func main() {
 			})
 			return
 		}
+		client := DBConn()
+		IsFind, err2 := client.Find(user)
+		if err2 != nil {
+			log.Println(err)
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		if IsFind {
+			s, err := jwt.GenerateJWT(user.Name)
+			if err != nil {
+				fmt.Println("generate jwt failed, ", err)
+				os.Exit(1)
+			}
+			fmt.Printf("GenereateJWT:%s\n", s)
 
+			// claim, err := jwt.ParseJwt(s, secretKey)
+			// if err != nil {
+			// 	fmt.Printf("parse fail")
+			// 	os.Exit(1)
+			// }
+			// fmt.Printf("ParseJWT:%v\n", claim)
+			token := s
+			// c.SetCookie("site token", token, 3600, "/", "localhost", false, true)
+			c.JSON(http.StatusOK, gin.H{
+				"code": 0,
+				"msg":  "Success",
+				"data": gin.H{"token": token},
+			})
+			c.Redirect(http.StatusSeeOther, "/")
+		} else {
+			c.JSON(400, gin.H{
+				"message": "login fail, user/ password error",
+			})
+			c.Redirect(http.StatusSeeOther, "/login")
+		}
+		// 	c.JSON(200, gin.H{
+		// 		"message": "Create data ok",
+		// 	})
 	})
-	err := app.Run(":3000")
-	if err != nil {
-		panic(err)
+	err2 := app.Run(":3000")
+	if err2 != nil {
+		panic(err2)
 	}
 
 	// client := postgres.DBClient{}
@@ -170,9 +234,6 @@ func TestInsert(client postgres.DBClient) {
 	// client.Insert(play)
 }
 
-func Read() {
-	var client = DBConn()
-}
 func DBConn() postgres.DBClient {
 	client := postgres.DBClient{}
 	client.Connect()
