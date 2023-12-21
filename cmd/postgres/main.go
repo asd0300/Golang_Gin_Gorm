@@ -1,68 +1,5 @@
 package main
 
-// import "fmt"
-
-// const (
-// 	WHITE = iota
-// 	BLACK
-// 	BLUE
-// 	RED
-// 	YELLOW
-// )
-
-// type Color byte
-// type Box struct {
-// 	width  float64
-// 	height float64
-// 	depth  float64
-// 	color  Color
-// }
-// type BoxList []Box
-
-// func (b Box) Volumn() float64 {
-// 	return b.depth * b.width * b.height
-// }
-
-// func (bi BoxList) BiggestColor() Color {
-// 	cur := 0.00
-// 	var curColor Color
-// 	for _, v := range bi {
-// 		bv := v.Volumn()
-// 		if bv > cur {
-// 			cur = bv
-// 			curColor = v.color
-// 		}
-// 	}
-// 	return curColor
-// }
-
-// func (b *Box) SetColor(c Color) {
-// 	b.color = c
-// }
-
-// func (bl BoxList) PaintAllBlack() {
-// 	for i := range bl {
-// 		bl[i].SetColor(BLACK)
-// 	}
-// }
-// func (c Color) String() string {
-// 	strings := []string{"WHITE", "BLACK", "BLUE", "RED", "YELLOW"}
-// 	return strings[c]
-// }
-// func main() {
-// 	boxes := BoxList{
-// 		Box{4, 4, 4, RED},
-// 		Box{10, 10, 1, YELLOW},
-// 		Box{1, 1, 20, BLACK},
-// 		Box{10, 10, 1, BLUE},
-// 		Box{10, 30, 1, WHITE},
-// 		Box{20, 20, 20, YELLOW},
-// 	}
-
-// 	fmt.Printf("we have %d boxes\n", len(boxes))
-// 	fmt.Printf("we also have 6 boxes")
-// }
-
 import (
 	"GO_test/pkg/jwt"
 	postgres "GO_test/pkg/postgres"
@@ -74,18 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func main() {
-// 	r := gin.Default()
-// 	r.GET("/", func(c *gin.Context) {
-// 		c.JSON(200, gin.H{
-// 			"message": "Welcom to your frist GIN Web!!!",
-// 		})
-// 	})
-// 		r.Run() // listen and serve on 0.0.0.0:8080
-// 	}
-
 func main() {
 	app := gin.Default()
+	app.Use(corsMiddleware())
 	app.GET("/user", jwt.JWTAuthMiddleware(), func(c *gin.Context) {
 		c.String(200, "/user")
 	})
@@ -201,7 +129,7 @@ func main() {
 		// 		"message": "Create data ok",
 		// 	})
 	})
-	err2 := app.Run(":3000")
+	err2 := app.Run(":4000")
 	if err2 != nil {
 		panic(err2)
 	}
@@ -216,6 +144,19 @@ func main() {
 	// // client.Update(plays[0])
 	// client.Delete(plays[0])
 	// ReadAll(client)
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+		c.Next()
+	}
 }
 
 func ReadAll(client postgres.DBClient) []postgres.Player {
