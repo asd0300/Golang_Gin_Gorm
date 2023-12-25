@@ -123,7 +123,7 @@ func main() {
 			c.JSON(400, gin.H{
 				"message": "login fail, user/ password error",
 			})
-			c.Redirect(http.StatusSeeOther, "/login")
+			// c.Redirect(http.StatusSeeOther, "/login")
 		}
 		// 	c.JSON(200, gin.H{
 		// 		"message": "Create data ok",
