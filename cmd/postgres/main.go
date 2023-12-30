@@ -3,6 +3,7 @@ package main
 import (
 	"GO_test/pkg/jwt"
 	postgres "GO_test/pkg/postgres"
+	. "GO_test/src"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +15,9 @@ import (
 func main() {
 	app := gin.Default()
 	app.Use(corsMiddleware())
+	v1 := app.Group("v1")
+	AddProductRoute(v1)
+
 	app.GET("/user", jwt.JWTAuthMiddleware(), func(c *gin.Context) {
 		c.String(200, "/user")
 	})
@@ -145,7 +149,6 @@ func main() {
 	// client.Delete(plays[0])
 	// ReadAll(client)
 }
-
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
