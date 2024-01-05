@@ -58,7 +58,7 @@ func DeleteProduct(c *gin.Context) {
 	// c.JSON(http.StatusNotFound, "Error")
 	testId, _ := strconv.Atoi(c.Param("id"))
 	product := pojo.DeleteProduct(testId)
-	if product.Id == 0 {
+	if product == false {
 		c.JSON(http.StatusNotFound, "Error")
 		return
 	}

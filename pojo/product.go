@@ -5,11 +5,12 @@ import (
 )
 
 type Product struct {
-	Id            int           `json:"id" gorm:"primaryKey"`
-	Title         string        `json:"title"`
-	Price         int           `json:"price"`
-	Newprice      int           `json:"newprice"`
-	Productdetail Productdetail `json:"productdetail" gorm:"foreignKey:Id;references:Id" gorm:"delete:CASCADE"`
+	Id       int    `json:"id" gorm:"primaryKey"`
+	Title    string `json:"title"`
+	Price    int    `json:"price"`
+	Newprice int    `json:"newprice"`
+	Titlepic string `json:"titlepic"`
+	Otherpic string `json:"otherpic"`
 }
 type Productdetail struct {
 	Id       int    `json:"id" gorm:"primaryKey"`
@@ -30,17 +31,17 @@ func FindByProductID(productId int) Product {
 }
 
 func CreateProduct(product Product) Product {
-	DBClient.Create(&product.Productdetail)
 	DBClient.Create(&product)
 	return product
 }
 
-func DeleteProduct(productId int) Product {
-	productdetail := Productdetail{}
-	product := Product{}
-	DBClient.Where("Id = ?", productId).Delete(&productdetail)
-	DBClient.Where("Id = ?", productId).Delete(&product)
-	return product
+func DeleteProduct(productId int) bool {
+	var product = Product{}
+	result := DBClient.Where("Id = ?", productId).Delete(&product)
+	if result.RowsAffected == 0 {
+		return false
+	}
+	return true
 }
 
 func UpdateProduct(productId int, product Product) Product {

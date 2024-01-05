@@ -18,7 +18,6 @@ func main() {
 	go func() {
 		database.Connect()
 	}()
-	database.Connect()
 	// app.GET("/user", jwt.JWTAuthMiddleware(), func(c *gin.Context) {
 	// 	c.String(200, "/user")
 	// })

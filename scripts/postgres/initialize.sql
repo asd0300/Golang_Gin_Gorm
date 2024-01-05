@@ -1,7 +1,7 @@
 -- DROP TABLE IF EXISTS players;
 -- DROP TABLE IF EXISTS games;
-DROP TABLE IF EXISTS users;
--- DROP TABLE IF EXISTS products CASCADE;
+-- DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS products CASCADE;
 -- DROP TABLE IF EXISTS productdetails;
 CREATE TABLE players (
  id SERIAL PRIMARY KEY,
@@ -25,6 +25,8 @@ CREATE TABLE products (
  id SERIAL PRIMARY KEY,
  title VARCHAR(50) NOT NULL,
  price INTEGER NOT NULL,
+ titlepic TEXT NOT NULL,
+ otherpic TEXT,
  newprice INTEGER
 );
 CREATE TABLE productdetails(
