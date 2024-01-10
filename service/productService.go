@@ -34,11 +34,19 @@ func FindByProductID(c *gin.Context) {
 // post
 func PostProduct(c *gin.Context) {
 	product := pojo.Product{}
-	err := c.BindJSON(&product)
-	if err != nil {
-		c.JSON(http.StatusNotAcceptable, "Error: "+err.Error())
-		return
-	}
+	title := c.PostForm("title")
+	price, _ := strconv.Atoi(c.PostForm("price"))
+	newprice, _ := strconv.Atoi(c.PostForm("newprice"))
+	println("title:", title)
+	product.Title = title
+	product.Price = price
+	product.Newprice = newprice
+
+	// err := c.BindJSON(&product)
+	// if err != nil {
+	// 	c.JSON(http.StatusNotAcceptable, "Error: "+err.Error())
+	// 	return
+	// }
 	newProduct := pojo.CreateProduct(product)
 	// productList = append(productList, product)
 	c.JSON(http.StatusOK, newProduct)
