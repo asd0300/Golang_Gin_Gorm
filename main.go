@@ -15,6 +15,7 @@ func main() {
 	app.Use(corsMiddleware())
 	v1 := app.Group("v1")
 	AddProductRoute(v1)
+	AddUserRoute(v1)
 	go func() {
 		database.Connect()
 	}()
