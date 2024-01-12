@@ -22,6 +22,15 @@ func FindAllUsers() []User {
 // 	return product
 // }
 
+func FindByUserEmail(inputUser User) bool {
+	var user User
+	result := DBClient.Where("email = ? AND  password = ?", inputUser.Email, inputUser.Password).First(&user)
+	if result.Error != nil {
+		return false
+	}
+	return true
+}
+
 func CreateUser(user User) User {
 	DBClient.Create(&user)
 	return user

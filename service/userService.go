@@ -1,6 +1,7 @@
 package service
 
 import (
+	"GO_test/middle/jwt"
 	"GO_test/pojo"
 	"crypto/sha1"
 	"fmt"
@@ -31,23 +32,32 @@ import (
 
 // post
 func PostRegisterUser(c *gin.Context) {
-	// product := pojo.Product{}
-	// title := c.PostForm("title")
-	// price, _ := strconv.Atoi(c.PostForm("price"))
-	// newprice, _ := strconv.Atoi(c.PostForm("newprice"))
-	// println("title:", title)
-	// product.Title = title
-	// product.Price = price
-	// product.Newprice = newprice
-	// newProduct := pojo.CreateProduct(product)
-	// // productList = append(productList, product)
 	user := pojo.User{}
-	form, err := c.MultipartForm()
-	fmt.Printf("%+v, %+v\n", form, err)
-	user.Email = c.PostForm("email")
-	user.Password = sha1It(c.PostForm("password"))
-	newUser := pojo.CreateUser(user)
-	c.JSON(http.StatusOK, newUser)
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		return
+	}
+	user.Password = sha1It(user.Password)
+	pojo.CreateUser(user)
+	c.JSON(http.StatusOK, "success")
+}
+
+// post login
+func PostLoginUser(c *gin.Context) {
+	user := pojo.User{}
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		return
+	}
+	user.Password = sha1It(user.Password)
+	result := pojo.FindByUserEmail(user)
+	if result {
+		loginJWT, _ := jwt.GenerateJWT(user.Email)
+		c.JSON(http.StatusOK, gin.H{"jwt": loginJWT})
+		return
+	}
+	c.JSON(http.StatusNotFound, "Login failed")
+
 }
 
 // Encrypt

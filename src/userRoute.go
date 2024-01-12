@@ -17,6 +17,7 @@ func AddUserRoute(r *gin.RouterGroup) {
 
 	reginster := r.Group("/user")
 	reginster.POST("/register", service.PostRegisterUser)
+	reginster.POST("/login", service.PostLoginUser)
 	// reginster.POST("/login", service.)
 
 }
