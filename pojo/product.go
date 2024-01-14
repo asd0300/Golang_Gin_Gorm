@@ -2,15 +2,17 @@ package pojo
 
 import (
 	. "GO_test/database"
+	"time"
 )
 
 type Product struct {
-	Id       int    `json:"id" gorm:"primaryKey"`
-	Title    string `json:"title"`
-	Price    int    `json:"price"`
-	Newprice int    `json:"newprice"`
-	Titlepic string `json:"titlepic"`
-	Otherpic string `json:"otherpic"`
+	Id         int       `json:"id" gorm:"primaryKey"`
+	Title      string    `json:"title"`
+	Price      int       `json:"price"`
+	Newprice   int       `json:"newprice"`
+	Titlepic   string    `json:"titlepic"`
+	Otherpic   string    `json:"otherpic"`
+	CreateDate time.Time `json:"createdate" gorm:"column:createDate"`
 }
 type Productdetail struct {
 	Id       int    `json:"id" gorm:"primaryKey"`
@@ -30,9 +32,9 @@ func FindByProductID(productId int) Product {
 	return product
 }
 
-func CreateProduct(product Product) Product {
-	DBClient.Create(&product)
-	return product
+func CreateProduct(product Product) error {
+	result := DBClient.Create(&product)
+	return result.Error
 }
 
 func DeleteProduct(productId int) bool {

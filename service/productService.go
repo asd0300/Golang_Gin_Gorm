@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,19 +38,25 @@ func PostProduct(c *gin.Context) {
 	title := c.PostForm("title")
 	price, _ := strconv.Atoi(c.PostForm("price"))
 	newprice, _ := strconv.Atoi(c.PostForm("newprice"))
-	println("title:", title)
+	titlepic := c.PostForm("titlePic")
+
 	product.Title = title
 	product.Price = price
 	product.Newprice = newprice
+	product.Titlepic = titlepic
+	product.CreateDate = time.Now()
 
 	// err := c.BindJSON(&product)
 	// if err != nil {
 	// 	c.JSON(http.StatusNotAcceptable, "Error: "+err.Error())
 	// 	return
 	// }
-	newProduct := pojo.CreateProduct(product)
+	err := pojo.CreateProduct(product)
+	if err == nil {
+		c.JSON(http.StatusOK, "Success")
+	}
 	// productList = append(productList, product)
-	c.JSON(http.StatusOK, newProduct)
+	c.JSON(http.StatusNotAcceptable, "Product CreateFail")
 }
 
 // delete
