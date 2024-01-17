@@ -6,11 +6,19 @@ import (
 	. "GO_test/src"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
+	test := os.Getenv("test")
+	test2 := os.Getenv("test2")
+
+	fmt.Println(test)
+	fmt.Println(test2)
+
 	app := gin.Default()
 	app.Use(corsMiddleware())
 	v1 := app.Group("v1")

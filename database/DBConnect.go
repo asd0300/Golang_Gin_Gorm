@@ -18,20 +18,20 @@ var DBClient *gorm.DB
 var err error
 
 func Connect() {
-	config := GetDbConfig()
+	// config := GetDbConfig()
 	dsn := fmt.Sprintf(
 		`host=%s
  user=%s 
  password=%s 
  dbname=%s 
- port=%d 
+ port=%s 
  sslmode=disable 
  TimeZone=Asia/Taipei`,
-		config.Addr,
-		config.Username,
-		config.Password,
-		config.DBname,
-		config.Port)
+		os.Getenv("Addr"),
+		os.Getenv("Username"),
+		os.Getenv("Password"),
+		os.Getenv("DBname"),
+		os.Getenv("Port"))
 	DBClient, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

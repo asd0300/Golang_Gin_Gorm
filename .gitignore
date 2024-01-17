@@ -1,1 +1,6 @@
 cmd/postgres/__debug_bin*
+.test/*
+__debug*
+docker-compose.yaml
+.env
+config/*

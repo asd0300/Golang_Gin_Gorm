@@ -1,7 +1,8 @@
+CREATE DATABASE IF NOT EXISTS postgres;
 -- DROP TABLE IF EXISTS players;
 -- DROP TABLE IF EXISTS games;
-DROP TABLE IF EXISTS users;
--- DROP TABLE IF EXISTS products CASCADE;
+-- DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS products CASCADE;
 -- DROP TABLE IF EXISTS productdetails;
 CREATE TABLE players (
  id SERIAL PRIMARY KEY,
@@ -26,7 +27,8 @@ CREATE TABLE products (
  price INTEGER NOT NULL,
  titlepic TEXT NOT NULL,
  otherpic TEXT,
- newprice INTEGER
+ newprice INTEGER,
+ createdate date
 );
 CREATE TABLE productdetails(
  id INTEGER PRIMARY KEY,

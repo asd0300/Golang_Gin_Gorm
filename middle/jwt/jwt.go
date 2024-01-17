@@ -50,7 +50,7 @@ func ParseJwt(tokenstring string) (*Userjwt, error) {
 func JWTAuthMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		//Get token
-		authHeader := c.Request.Header.Get("Authorization")
+		authHeader := c.Request.Header.Get("userToken")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": -1,

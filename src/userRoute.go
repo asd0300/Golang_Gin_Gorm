@@ -1,6 +1,7 @@
 package src
 
 import (
+	"GO_test/middle/jwt"
 	"GO_test/service"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +17,9 @@ func AddUserRoute(r *gin.RouterGroup) {
 	// product.PUT("/:id", service.PutProduct)
 
 	reginster := r.Group("/user")
-	reginster.POST("/register", service.PostRegisterUser)
 	reginster.POST("/login", service.PostLoginUser)
+	reginster.POST("/register", service.PostRegisterUser)
+	reginster.Use(jwt.JWTAuthMiddleware())
 	// reginster.POST("/login", service.)
 
 }

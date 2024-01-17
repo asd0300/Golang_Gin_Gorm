@@ -54,6 +54,7 @@ func PostProduct(c *gin.Context) {
 	err := pojo.CreateProduct(product)
 	if err == nil {
 		c.JSON(http.StatusOK, "Success")
+		return
 	}
 	// productList = append(productList, product)
 	c.JSON(http.StatusNotAcceptable, "Product CreateFail")
