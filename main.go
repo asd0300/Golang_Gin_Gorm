@@ -27,121 +27,6 @@ func main() {
 	go func() {
 		database.Connect()
 	}()
-	// app.GET("/user", jwt.JWTAuthMiddleware(), func(c *gin.Context) {
-	// 	c.String(200, "/user")
-	// })
-	// app.GET("hello/:name", func(c *gin.Context) {
-	// 	fmt.Println(c.FullPath())
-	// 	name := c.Param("name")
-	// 	c.JSON(200, gin.H{
-	// 		"message": "hello " + name,
-	// 	})
-	// 	c.String(http.StatusOK, "\n123")
-	// })
-	// app.GET("/go/:name/*action", func(c *gin.Context) {
-	// 	name := c.Param("name")
-	// 	action := c.Param("action")
-	// 	message := name + " is " + action
-	// 	c.String(http.StatusOK, message)
-	// })
-	// app.POST("/user/create", func(c *gin.Context) {
-	// 	var user postgres.User
-	// 	err := c.ShouldBind(&user)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	client := postgres.DBClient{}
-	// 	client.Connect()
-	// 	err = client.Insert(&user)
-	// 	if err != nil {
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	c.JSON(200, gin.H{
-	// 		"message": "Create data ok",
-	// 	})
-
-	// })
-	// app.POST("/product/create", func(c *gin.Context) {
-	// 	var product postgres.Product
-	// 	err := c.ShouldBindJSON(&product)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	client := postgres.DBClient{}
-	// 	client.Connect()
-	// 	err = client.Insert(&product)
-	// 	if err != nil {
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	c.JSON(200, gin.H{
-	// 		"message": "Create data ok",
-	// 	})
-	// })
-	// app.POST("user/login", func(c *gin.Context) {
-	// 	var user postgres.User
-	// 	err := c.ShouldBind(&user)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	client := DBConn()
-	// 	IsFind, err2 := client.Find(user)
-	// 	if err2 != nil {
-	// 		log.Println(err)
-	// 		c.JSON(400, gin.H{
-	// 			"error": err.Error(),
-	// 		})
-	// 		return
-	// 	}
-	// 	if IsFind {
-	// 		s, err := jwt.GenerateJWT(user.Name)
-	// 		if err != nil {
-	// 			fmt.Println("generate jwt failed, ", err)
-	// 			os.Exit(1)
-	// 		}
-	// 		fmt.Printf("GenereateJWT:%s\n", s)
-
-	// 		// claim, err := jwt.ParseJwt(s, secretKey)
-	// 		// if err != nil {
-	// 		// 	fmt.Printf("parse fail")
-	// 		// 	os.Exit(1)
-	// 		// }
-	// 		// fmt.Printf("ParseJWT:%v\n", claim)
-	// 		token := s
-	// 		// c.SetCookie("site token", token, 3600, "/", "localhost", false, true)
-	// 		c.JSON(http.StatusOK, gin.H{
-	// 			"code": 0,
-	// 			"msg":  "Success",
-	// 			"data": gin.H{"token": token},
-	// 		})
-	// 		c.Redirect(http.StatusSeeOther, "/")
-	// 	} else {
-	// 		c.JSON(400, gin.H{
-	// 			"message": "login fail, user/ password error",
-	// 		})
-	// 		// c.Redirect(http.StatusSeeOther, "/login")
-	// 	}
-	// 	// 	c.JSON(200, gin.H{
-	// 	// 		"message": "Create data ok",
-	// 	// 	})
-	// })
 	err2 := app.Run(":4000")
 	if err2 != nil {
 		panic(err2)
@@ -162,7 +47,7 @@ func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, userToken")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(http.StatusOK)
 			return

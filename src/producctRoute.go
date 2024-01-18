@@ -9,8 +9,8 @@ import (
 
 func AddProductRoute(r *gin.RouterGroup) {
 	product := r.Group("/products")
-	product.Use(jwt.JWTAuthMiddleware())
 	product.GET("/", service.FindAllProducts)
+	product.Use(jwt.JWTAuthMiddleware())
 	product.GET("/:id", service.FindByProductID)
 	product.POST("/", service.PostProduct)
 	product.DELETE("/:id", service.DeleteProduct)

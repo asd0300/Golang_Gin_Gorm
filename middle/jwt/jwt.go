@@ -60,15 +60,15 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 		parts := strings.SplitN(authHeader, " ", 2)
-		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": -1,
-				"msg":  "Format of authroization wrong",
-			})
-			c.Abort()
-			return
-		}
-		mc, err := ParseJwt(parts[1])
+		// if !(len(parts) == 2 && parts[0] == "Bearer") {
+		// 	c.JSON(http.StatusUnauthorized, gin.H{
+		// 		"code": -1,
+		// 		"msg":  "Format of authroization wrong",
+		// 	})
+		// 	c.Abort()
+		// 	return
+		// }
+		mc, err := ParseJwt(parts[0])
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": -1,
