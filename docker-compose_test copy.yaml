@@ -1,0 +1,44 @@
+version: "3.5"
+
+services:
+  server:
+    image: g-server
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "4001:4000"
+    depends_on:
+      - db
+    entrypoint: go run main.go
+    restart: always
+    environment:
+      - Password=
+      - Name=postgres
+      - DBname=postgres
+      - Addr=172.19.0.4
+      - Username=postgres
+    networks:
+          Poya:
+            ipv4_address: 172.19.0.3
+  frontend:
+    image: nuxtapp
+    ports:
+      - "9004:3000"
+    # environment:
+    #   - Backend=http://172.19.0.3:4000
+    networks:
+          Poya:
+            ipv4_address: 172.19.0.2
+  db:
+    image: postgres:14-alpine
+    ports:
+      - 5433:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    networks:
+          Poya:
+            ipv4_address: 172.19.0.4
+networks:
+  Poya:
+    external: true

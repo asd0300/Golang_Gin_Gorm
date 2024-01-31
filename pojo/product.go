@@ -14,10 +14,12 @@ type Product struct {
 	Otherpic   string    `json:"otherpic"`
 	CreateDate time.Time `json:"createdate" gorm:"column:createDate"`
 }
-type Productdetail struct {
-	Id       int    `json:"id" gorm:"primaryKey"`
-	Titlepic string `json:"titlepic"`
-	Otherpic string `json:"otherpic"`
+type Productdetails struct {
+	Id      int    `json:"id" gorm:"primaryKey"`
+	Option  string `json:"option"`
+	Feature string `json:"feature"`
+	Content string `json:"content"`
+	Spec    string `json:"spec"`
 }
 
 func FindAllProducts() []Product {
@@ -29,6 +31,22 @@ func FindAllProducts() []Product {
 func FindByProductID(productId int) Product {
 	var product Product
 	DBClient.Where("Id = ?", productId).First(&product)
+	return product
+}
+
+func FindByProductDetialID(productId int) Productdetails {
+	var productDetail Productdetails
+	DBClient.Where("Id = ?", productId).First(&productDetail)
+	return productDetail
+}
+
+func FindByProductTitle(productTitle string) []Product {
+	var product []Product
+	if productTitle == "*" || productTitle == "" {
+		product = FindAllProducts()
+		return product
+	}
+	DBClient.Where("Title LIKE ?", "%"+productTitle+"%").Find(&product)
 	return product
 }
 

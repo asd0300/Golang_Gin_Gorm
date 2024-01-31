@@ -4,17 +4,16 @@ import (
 	. "GO_test/database"
 )
 
-type User struct {
-	Id       int    `json:"id" gorm:"primaryKey"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type Favorite struct {
+	UserId            int   `json:"userid" gorm:"primaryKey"`
+	FavoriteProductID []int `json:"favoriteproductid"`
 }
 
-func FindAllUsers() []User {
-	var users []User
-	DBClient.Find(&users)
-	return users
-}
+// func FindAllUsers() []User {
+// 	var users []User
+// 	DBClient.Find(&users)
+// 	return users
+// }
 
 // func FindByProductID(productId int) Product {
 // 	var product Product
@@ -22,20 +21,18 @@ func FindAllUsers() []User {
 // 	return product
 // }
 
-func FindByUserEmail(inputUser User) *User {
-	var user User
-	result := DBClient.Where("email = ? AND  password = ?", inputUser.Email, inputUser.Password).First(&user)
+func AddFavoriteByUserId(userfavorite Favorite) bool {
+	result := DBClient.Where(userfavorite.UserId).FirstOrCreate(&userfavorite)
 	if result.Error != nil {
-		return nil
+		return false
 	}
-	user.Password = ""
-	return &user
+	return true
 }
 
-func CreateUser(user User) User {
-	DBClient.Create(&user)
-	return user
-}
+// func CreateUser(user User) User {
+// 	DBClient.Create(&user)
+// 	return user
+// }
 
 // func DeleteProduct(productId int) bool {
 // 	var product = Product{}

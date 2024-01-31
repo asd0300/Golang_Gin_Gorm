@@ -10,6 +10,7 @@ import (
 func AddProductRoute(r *gin.RouterGroup) {
 	product := r.Group("/products")
 	product.GET("/", service.FindAllProducts)
+	product.GET("/search/:title", service.FindByProductTitle)
 	product.Use(jwt.JWTAuthMiddleware())
 	product.GET("/:id", service.FindByProductID)
 	product.POST("/", service.PostProduct)

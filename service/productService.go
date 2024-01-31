@@ -12,6 +12,11 @@ import (
 
 var productList = []pojo.Product{}
 
+type ProductResponse struct {
+	Product       pojo.Product        `json:"product"`
+	ProductDetial pojo.Productdetails `json:"productDetail"`
+}
+
 // get
 func FindAllProducts(c *gin.Context) {
 	// c.JSON(http.StatusOK, productList)
@@ -24,12 +29,30 @@ func FindAllProducts(c *gin.Context) {
 func FindByProductID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	product := pojo.FindByProductID(id)
+	productDetail := pojo.FindByProductDetialID(id)
 	if product.Id == 0 {
-		c.JSON(http.StatusNotFound, "Error")
+		c.JSON(http.StatusNotFound, "Error can't find Product")
+		return
+	}
+	if productDetail.Id == 0 {
+		c.JSON(http.StatusNotFound, "Error can't find ProductDetail")
 		return
 	}
 	log.Println("Product-> ", product)
+
+	c.JSON(http.StatusOK, ProductResponse{Product: product, ProductDetial: productDetail})
+}
+
+// get by title
+func FindByProductTitle(c *gin.Context) {
+	title := c.Param("title")
+	product := pojo.FindByProductTitle(title)
+	// if product.Id == 0 {
+	// 	c.JSON(http.StatusNotFound, "Error")
+	// 	return
+	// }
 	c.JSON(http.StatusOK, product)
+	return
 }
 
 // post

@@ -3,41 +3,24 @@ package service
 import (
 	"GO_test/middle/jwt"
 	"GO_test/pojo"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/sha1"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-// get
-// func FindAllProducts(c *gin.Context) {
-// 	// c.JSON(http.StatusOK, productList)
-// 	products := pojo.FindAllProducts()
-// 	c.JSON(http.StatusOK, products)
-// 	return
-// }
-
-// // get by id
-// func FindByProductID(c *gin.Context) {
-// 	id, _ := strconv.Atoi(c.Param("id"))
-// 	product := pojo.FindByProductID(id)
-// 	if product.Id == 0 {
-// 		c.JSON(http.StatusNotFound, "Error")
-// 		return
-// 	}
-// 	log.Println("Product-> ", product)
-// 	c.JSON(http.StatusOK, product)
-// }
-
-// post
 func PostRegisterUser(c *gin.Context) {
 	user := pojo.User{}
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
 		return
 	}
-	user.Password = sha1It(user.Password)
 	pojo.CreateUser(user)
 	c.JSON(http.StatusOK, "success")
 }
@@ -49,10 +32,9 @@ func PostLoginUser(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	user.Password = sha1It(user.Password)
 	result := pojo.FindByUserEmail(user)
-	if result {
-		loginJWT, _ := jwt.GenerateJWT(user.Email)
+	if result != nil {
+		loginJWT, _ := jwt.GenerateJWT(strconv.Itoa(result.Id) + "," + result.Email)
 		c.JSON(http.StatusOK, gin.H{"jwt": loginJWT})
 		return
 	}
@@ -72,39 +54,42 @@ func sha1It(password string) string {
 	return encryptCode
 }
 
-// // delete
-// func DeleteProduct(c *gin.Context) {
-// 	// productId, _ := strconv.Atoi(c.Param("Id"))
-// 	// for _, product := range productList {
-// 	// 	log.Println(product)
-// 	// 	if product.Id == productId {
-// 	// 		productList = append(productList[:productId], productList[productId+1:]...)
-// 	// 		c.JSON(http.StatusOK, "Successfully delete")
-// 	// 		return
-// 	// 	}
-// 	// }
-// 	// c.JSON(http.StatusNotFound, "Error")
-// 	testId, _ := strconv.Atoi(c.Param("id"))
-// 	product := pojo.DeleteProduct(testId)
-// 	if product == false {
-// 		c.JSON(http.StatusNotFound, "Error")
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, "success")
-// }
+func decrypt(encryptedData, keyString, ivString string) (string, error) {
+	key := []byte(keyString)
+	iv := []byte(ivString)
 
-// // put
-// func PutProduct(c *gin.Context) {
-// 	bProduct := pojo.Product{}
-// 	err := c.BindJSON(&bProduct)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, "Error")
-// 	}
-// 	productId, _ := strconv.Atoi(c.Param("Id"))
-// 	product := pojo.UpdateProduct(productId, bProduct)
-// 	if product.Id == 0 {
-// 		c.JSON(http.StatusNotFound, "Error")
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, product)
-// }
+	// 解码加密数据（假设是 base64 编码的）
+	ciphertext, err := base64.StdEncoding.DecodeString(encryptedData)
+	if err != nil {
+		return "", err
+	}
+
+	// 创建 AES 块
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+
+	// 创建 CBC 模式的解密器
+	if len(ciphertext) < aes.BlockSize {
+		return "", errors.New("ciphertext too short")
+	}
+	if len(ciphertext)%aes.BlockSize != 0 {
+		return "", errors.New("ciphertext is not a multiple of the block size")
+	}
+	mode := cipher.NewCBCDecrypter(block, iv)
+
+	// 解密
+	mode.CryptBlocks(ciphertext, ciphertext)
+
+	// 移除 PKCS#7 填充
+	return unpadPKCS7(ciphertext), nil
+}
+
+// unpadPKCS7 移除 PKCS#7 填充
+func unpadPKCS7(data []byte) string {
+	length := len(data)
+	unpadding := int(data[length-1])
+
+	return string(data[:(length - unpadding)])
+}

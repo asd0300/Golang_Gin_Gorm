@@ -6,27 +6,17 @@ import (
 	. "GO_test/src"
 	"fmt"
 	"net/http"
-	"os"
+
+	_ "GO_test/docs"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
-	test := os.Getenv("test")
-	test2 := os.Getenv("test2")
-
-	fmt.Println(test)
-	fmt.Println(test2)
-
-	app := gin.Default()
-	app.Use(corsMiddleware())
-	v1 := app.Group("v1")
-	AddProductRoute(v1)
-	AddUserRoute(v1)
-	go func() {
-		database.Connect()
-	}()
+	app := setupRouter()
 	err2 := app.Run(":4000")
 	if err2 != nil {
 		panic(err2)
@@ -42,6 +32,21 @@ func main() {
 	// // client.Update(plays[0])
 	// client.Delete(plays[0])
 	// ReadAll(client)
+}
+
+func setupRouter() *gin.Engine {
+	app := gin.Default()
+
+	app.Use(corsMiddleware())
+	v1 := app.Group("v1")
+	AddProductRoute(v1)
+	AddUserRoute(v1)
+	// go func() {
+	// 	database.Connect()
+	// }()
+	database.Connect()
+	app.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	return app
 }
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
