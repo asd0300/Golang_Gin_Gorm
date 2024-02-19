@@ -14,7 +14,51 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/v1/products/": {
+            "get": {
+                "description": "get string by ID",
+                "summary": "Show an account",
+                "operationId": "id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/pojo.Product"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "pojo.Product": {
+            "type": "object",
+            "properties": {
+                "createdate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "newprice": {
+                    "type": "integer"
+                },
+                "otherpic": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "titlepic": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

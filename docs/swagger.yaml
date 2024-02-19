@@ -1,4 +1,32 @@
+definitions:
+  pojo.Product:
+    properties:
+      createdate:
+        type: string
+      id:
+        type: integer
+      newprice:
+        type: integer
+      otherpic:
+        type: string
+      price:
+        type: integer
+      title:
+        type: string
+      titlepic:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /v1/products/:
+    get:
+      description: get string by ID
+      operationId: id
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pojo.Product'
+      summary: Show an account
 swagger: "2.0"

@@ -41,6 +41,8 @@ func setupRouter() *gin.Engine {
 	v1 := app.Group("v1")
 	AddProductRoute(v1)
 	AddUserRoute(v1)
+	AddCartRoute(v1)
+	AddFavoriteRoute(v1)
 	// go func() {
 	// 	database.Connect()
 	// }()

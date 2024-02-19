@@ -3,10 +3,13 @@ package service
 import (
 	"GO_test/pojo"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/paymentintent"
 )
 
 // type ProductResponse struct {
@@ -22,44 +25,76 @@ import (
 // 	return
 // }
 
+// get
+func FindAllCartItemByUID(c *gin.Context) {
+	userId, _ := strconv.Atoi(c.Param("userid"))
+	cartItems := pojo.FindByUserId(userId)
+	c.JSON(http.StatusOK, cartItems)
+	return
+}
+
 // post
 func PostCart(c *gin.Context) {
-	product := pojo.Product{}
-	title := c.PostForm("title")
-	price, _ := strconv.Atoi(c.PostForm("price"))
-	newprice, _ := strconv.Atoi(c.PostForm("newprice"))
-	titlepic := c.PostForm("titlePic")
+	cart := pojo.Cart{}
+	userid, _ := strconv.Atoi(c.PostForm("userid"))
+	productid, _ := strconv.Atoi(c.PostForm("productid"))
+	numberbuy, _ := strconv.Atoi(c.PostForm("numberbuy"))
+	spec := c.PostForm("spec")
 
-	product.Title = title
-	product.Price = price
-	product.Newprice = newprice
-	product.Titlepic = titlepic
-	product.CreateDate = time.Now()
+	cart.Userid = userid
+	cart.Productid = productid
+	cart.Numberbuy = numberbuy
+	cart.Spec = spec
+	cart.Createtime = time.Now()
 
 	// err := c.BindJSON(&product)
 	// if err != nil {
 	// 	c.JSON(http.StatusNotAcceptable, "Error: "+err.Error())
 	// 	return
 	// }
-	err := pojo.CreateProduct(product)
+	err := pojo.CreateCart(cart)
 	if err == nil {
 		c.JSON(http.StatusOK, "Success")
 		return
 	}
 	// productList = append(productList, product)
-	c.JSON(http.StatusNotAcceptable, "Product CreateFail")
+	c.JSON(http.StatusNotAcceptable, "Cart CreateFail")
 }
 
-// // delete
-// func DeleteProduct(c *gin.Context) {
-// 	testId, _ := strconv.Atoi(c.Param("id"))
-// 	product := pojo.DeleteProduct(testId)
-// 	if product == false {
-// 		c.JSON(http.StatusNotFound, "Error")
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, "success")
-// }
+// post CreateIntent
+func CreateIntent(c *gin.Context) {
+	stripe.Key = os.Getenv("StripeSK")
+	var request struct {
+		Amount int64 `json:"amount"`
+	}
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	params := &stripe.PaymentIntentParams{
+		Amount:   stripe.Int64(request.Amount),
+		Currency: stripe.String(string(stripe.CurrencyTWD)),
+	}
+	//創造付款意圖
+	pi, err := paymentintent.New(params)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"clientSecret": pi.ClientSecret})
+}
+
+// delete
+func DeleteCart(c *gin.Context) {
+	userid, _ := strconv.Atoi(c.PostForm("userid"))
+	productid, _ := strconv.Atoi(c.PostForm("productid"))
+	result := pojo.DeleteCart(userid, productid)
+	if result == false {
+		c.JSON(http.StatusNotFound, "Error")
+		return
+	}
+	c.JSON(http.StatusOK, "success")
+}
 
 // // put
 // func PutProduct(c *gin.Context) {

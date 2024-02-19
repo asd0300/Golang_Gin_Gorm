@@ -8,10 +8,11 @@ import (
 )
 
 func AddCartRoute(r *gin.RouterGroup) {
-	product := r.Group("/carts")
-	product.Use(jwt.JWTAuthMiddleware())
-	// product.GET("/:id", service.FindByProductID)
-	product.POST("/", service.PostCart)
-	// product.DELETE("/:id", service.DeleteProduct)
+	cart := r.Group("/carts")
+	cart.Use(jwt.JWTAuthMiddleware())
+	cart.GET("/:userid", service.FindAllCartItemByUID)
+	cart.POST("/", service.PostCart)
+	cart.POST("/create-payment-intent", service.CreateIntent)
+	cart.POST("/delete", service.DeleteCart)
 	// product.PUT("/:id", service.PutProduct)
 }

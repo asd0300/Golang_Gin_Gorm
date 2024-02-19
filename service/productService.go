@@ -17,6 +17,11 @@ type ProductResponse struct {
 	ProductDetial pojo.Productdetails `json:"productDetail"`
 }
 
+// post create project/ projectDetail
+func CreateProducts(c *gin.Context) {
+
+}
+
 // get
 func FindAllProducts(c *gin.Context) {
 	// c.JSON(http.StatusOK, productList)
@@ -25,7 +30,6 @@ func FindAllProducts(c *gin.Context) {
 	return
 }
 
-// get by id
 func FindByProductID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	product := pojo.FindByProductID(id)
@@ -45,8 +49,9 @@ func FindByProductID(c *gin.Context) {
 
 // get by title
 func FindByProductTitle(c *gin.Context) {
-	title := c.Param("title")
-	product := pojo.FindByProductTitle(title)
+	title := c.PostForm("title")
+	filter := c.PostForm("filter")
+	product := pojo.FindByProductTitle(title, filter)
 	// if product.Id == 0 {
 	// 	c.JSON(http.StatusNotFound, "Error")
 	// 	return
@@ -58,24 +63,36 @@ func FindByProductTitle(c *gin.Context) {
 // post
 func PostProduct(c *gin.Context) {
 	product := pojo.Product{}
+	productdetail := pojo.Productdetails{}
 	title := c.PostForm("title")
 	price, _ := strconv.Atoi(c.PostForm("price"))
 	newprice, _ := strconv.Atoi(c.PostForm("newprice"))
-	titlepic := c.PostForm("titlePic")
+	titlepic := c.PostForm("titlepic")
+	otherpic := c.PostForm("otherpic")
 
 	product.Title = title
 	product.Price = price
 	product.Newprice = newprice
 	product.Titlepic = titlepic
+	product.Otherpic = otherpic
 	product.CreateDate = time.Now()
 
-	// err := c.BindJSON(&product)
-	// if err != nil {
-	// 	c.JSON(http.StatusNotAcceptable, "Error: "+err.Error())
-	// 	return
-	// }
-	err := pojo.CreateProduct(product)
+	option := c.PostForm("option")
+	feature := c.PostForm("feature")
+	content := c.PostForm("content")
+	spec := c.PostForm("spec")
+	productdetail.Option = option
+	productdetail.Feature = feature
+	productdetail.Content = content
+	productdetail.Spec = spec
+
+	err, productId := pojo.CreateProduct(product)
+	//使用create後的 id
 	if err == nil {
+		productdetail.Id = productId
+	}
+	err2 := pojo.CreateProductDetail(productdetail)
+	if err == nil && err2 == nil {
 		c.JSON(http.StatusOK, "Success")
 		return
 	}
