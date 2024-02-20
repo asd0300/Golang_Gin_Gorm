@@ -4,8 +4,10 @@ import (
 	"GO_test/database"
 	postgres "GO_test/pkg/postgres"
 	. "GO_test/src"
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	_ "GO_test/docs"
 
@@ -36,7 +38,7 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	app := gin.Default()
-
+	// app.Use(timeoutMiddleware(5 * time.Second))
 	app.Use(corsMiddleware())
 	v1 := app.Group("v1")
 	AddProductRoute(v1)
@@ -60,6 +62,30 @@ func corsMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Next()
+	}
+}
+
+func timeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Wrap the request context with a timeout
+		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
+		defer cancel() // Important to avoid a context leak
+
+		// Replace the request with a context-aware request
+		c.Request = c.Request.WithContext(ctx)
+
+		// Use a channel to receive a signal when the request is done
+		done := make(chan struct{}, 1)
+		go func() {
+			c.Next() // Process the request
+			done <- struct{}{}
+		}()
+
+		select {
+		case <-ctx.Done():
+			c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{"message": "request timed out"})
+		case <-done:
+		}
 	}
 }
 

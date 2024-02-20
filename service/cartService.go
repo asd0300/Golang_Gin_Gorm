@@ -72,7 +72,7 @@ func CreateIntent(c *gin.Context) {
 		return
 	}
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(request.Amount),
+		Amount:   stripe.Int64(request.Amount * 100),
 		Currency: stripe.String(string(stripe.CurrencyTWD)),
 	}
 	//創造付款意圖
@@ -87,8 +87,8 @@ func CreateIntent(c *gin.Context) {
 // delete
 func DeleteCart(c *gin.Context) {
 	userid, _ := strconv.Atoi(c.PostForm("userid"))
-	productid, _ := strconv.Atoi(c.PostForm("productid"))
-	result := pojo.DeleteCart(userid, productid)
+	cartid, _ := strconv.Atoi(c.PostForm("cartid"))
+	result := pojo.DeleteCart(userid, cartid)
 	if result == false {
 		c.JSON(http.StatusNotFound, "Error")
 		return

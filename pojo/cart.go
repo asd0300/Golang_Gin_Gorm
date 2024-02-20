@@ -11,6 +11,8 @@ type Cart struct {
 	Numberbuy  int       `json:"numberbuy"`
 	Spec       string    `json:"spec"`
 	Createtime time.Time `json:"createtime"`
+	Cartid     int       `json:"cartid"`
+	Ispay      bool      `json:"ispay"`
 }
 
 type ResultCart struct {
@@ -32,7 +34,8 @@ type ResultCart struct {
 
 func FindByUserId(userid int) []ResultCart {
 	var resultcart []ResultCart
-	DBClient.Table("carts").Select("carts.*,products.newprice,products.price, products.title, products.titlepic").Joins("join products on  carts.productid = products.id").Where("carts.userid = ?", userid).Scan(&resultcart)
+	DBClient.Table("carts").Select("carts.*,products.newprice,products.price, products.title, products.titlepic").
+		Joins("join products on  carts.productid = products.id").Where("carts.userid = ?", userid).Scan(&resultcart)
 	return resultcart
 }
 
@@ -51,9 +54,9 @@ func CreateCart(cart Cart) error {
 	return result.Error
 }
 
-func DeleteCart(userid int, productId int) bool {
+func DeleteCart(userid int, cartid int) bool {
 	var cart = Cart{}
-	result := DBClient.Where("userid = ? AND productid = ?", userid, productId).Delete(&cart)
+	result := DBClient.Where("userid = ? AND cartid = ?", userid, cartid).Delete(&cart)
 	if result.RowsAffected == 0 {
 		return false
 	}

@@ -5,3 +5,14 @@ docker-compose  -f '.\docker-compose_test.yaml' up
 
 //backup
 pg_dump -U postgres -f 20240205.sql postgres
+//restore
+psql -U postgres -f /database.sql
+//stripe test
+卡號
+4242 4242 4242 4242 
+日期
+12 / 34
+ccv
+567
+zip-code
+12345
