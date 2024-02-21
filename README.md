@@ -16,3 +16,6 @@ ccv
 567
 zip-code
 12345
+
+//docker postsql restore example
+docker exec -it 1741fa1923ac psql -U postgres -d postgres -f /tmp/20240220.sql

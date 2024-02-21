@@ -21,19 +21,21 @@ services:
     networks:
           Poya:
             ipv4_address: 172.19.0.3
-  frontend:
-    image: nuxtapp
-    ports:
-      - "9004:3000"
-    # environment:
-    #   - Backend=http://172.19.0.3:4000
-    networks:
-          Poya:
-            ipv4_address: 172.19.0.2
+  # frontend:
+  #   image: nuxtapp
+  #   ports:
+  #     - "9004:3000"
+  #   # environment:
+  #   #   - Backend=http://172.19.0.3:4000
+  #   networks:
+  #         Poya:
+  #           ipv4_address: 172.19.0.2
   db:
     image: postgres:14-alpine
     ports:
       - 5433:5432
+    environment:
+      - POSTGRES_PASSWORD=  # 設定超級用戶密碼
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
     networks:
