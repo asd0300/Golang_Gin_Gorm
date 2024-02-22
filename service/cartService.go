@@ -72,7 +72,7 @@ func CreateIntent(c *gin.Context) {
 		return
 	}
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(request.Amount * 100),
+		Amount:   stripe.Int64(request.Amount),
 		Currency: stripe.String(string(stripe.CurrencyTWD)),
 	}
 	//創造付款意圖

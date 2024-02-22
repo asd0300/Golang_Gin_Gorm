@@ -50,7 +50,7 @@ func FindByUserId(userid int) []ResultCart {
 // }
 
 func CreateCart(cart Cart) error {
-	result := DBClient.Create(&cart)
+	result := DBClient.Select("Userid", "Productid", "Numberbuy", "Spec", "Createtime", "Ispay").Create(&cart)
 	return result.Error
 }
 
