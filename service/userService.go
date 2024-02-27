@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,10 @@ func PostRegisterUser(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	pojo.CreateUser(user)
+	_, err = pojo.CreateUser(user)
+	if strings.Contains(err.Error(), "duplicate key value") {
+		c.JSON(http.StatusBadRequest, "duplicate key value")
+	}
 	c.JSON(http.StatusOK, "success")
 }
 

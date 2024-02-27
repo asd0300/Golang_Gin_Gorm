@@ -32,9 +32,12 @@ func FindByUserEmail(inputUser User) *User {
 	return &user
 }
 
-func CreateUser(user User) User {
-	DBClient.Create(&user)
-	return user
+func CreateUser(user User) (User, error) {
+	result := DBClient.Create(&user)
+	if result.Error != nil {
+		return User{}, result.Error
+	}
+	return user, nil
 }
 
 // func DeleteProduct(productId int) bool {
