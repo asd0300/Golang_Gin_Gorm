@@ -23,11 +23,13 @@
 參考docker-compose_test.yaml 修改後為docker-composer.yaml
 
         docker-compose -f './docker-composer.yaml' up -d
-
+###Redis
+        docker pull redis
+        docker run --name redis-lab -p 6379:6379 -d redis
 
 
 ###String 測試結帳參考帳戶
-卡號 4242 4242 4242 4242 
-日期 12 / 34
-ccv 567
-zip-code 12345
+        卡號 4242 4242 4242 4242 
+        日期 12 / 34
+        ccv 567
+        zip-code 12345
