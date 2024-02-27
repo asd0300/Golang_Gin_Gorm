@@ -1,7 +1,11 @@
 package service
 
 import (
+	"GO_test/database"
 	"GO_test/pojo"
+	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,6 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ctx = context.Background()
+var redishelper *database.RedisHelper
 var productList = []pojo.Product{}
 
 type ProductResponse struct {
@@ -24,10 +30,31 @@ func CreateProducts(c *gin.Context) {
 
 // get
 func FindAllProducts(c *gin.Context) {
-	// c.JSON(http.StatusOK, productList)
-	products := pojo.FindAllProducts()
-	c.JSON(http.StatusOK, products)
-	return
+	redishelper = database.GetRedisHelper()
+	// _, err := redishelper.Ping(ctx).Result()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	val, err := redishelper.Get(ctx, "products").Result()
+	if val == "" {
+		fmt.Println("products does not exist, prepare re-generate")
+		products := pojo.FindAllProducts()
+		productJSON, err := json.Marshal(products)
+		if err != nil {
+			panic(err)
+		}
+		redishelper.Set(ctx, "products", productJSON, 10*time.Second)
+		c.JSON(http.StatusOK, products)
+		return
+	} else {
+		var products []pojo.Product
+		err = json.Unmarshal([]byte(val), &products)
+		if err != nil {
+			panic(err)
+		}
+		c.JSON(http.StatusOK, products)
+	}
 }
 
 func FindByProductID(c *gin.Context) {

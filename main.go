@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+	database.ConnectRedis()
 	app := setupRouter()
 	err2 := app.Run(":4000")
 	if err2 != nil {
