@@ -28,7 +28,15 @@ func CreateProducts(c *gin.Context) {
 
 }
 
-// get
+// @BasePath /v1
+// @Summary ProductSeries
+// @Schemes https
+// @Description Get all product items
+// @Tags FindAllProducts
+// @Accept json
+// @Produce json
+// @Success 200 {string}
+// @Router /v1/products/ [get]
 func FindAllProducts(c *gin.Context) {
 	redishelper = database.GetRedisHelper()
 	// _, err := redishelper.Ping(ctx).Result()
@@ -57,6 +65,15 @@ func FindAllProducts(c *gin.Context) {
 	}
 }
 
+// @BasePath /v1
+// @Summary FindByProductID
+// @Schemes https
+// @Description Get products by id
+// @Tags FindByProductID
+// @Accept json
+// @Produce json
+// @Success 200 {string}
+// @Router /v1/products/:id [get]
 func FindByProductID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	product := pojo.FindByProductID(id)
@@ -74,7 +91,15 @@ func FindByProductID(c *gin.Context) {
 	c.JSON(http.StatusOK, ProductResponse{Product: product, ProductDetial: productDetail})
 }
 
-// get by title
+// @BasePath /v1
+// @Summary FindByProductTitle
+// @Schemes https
+// @Description Get product by titleName
+// @Tags FindByProductTitle
+// @Accept json
+// @Produce json
+// @Success 200 {string}
+// @Router /v1/products/search/:title [get]
 func FindByProductTitle(c *gin.Context) {
 	title := c.PostForm("title")
 	filter := c.PostForm("filter")
@@ -87,7 +112,15 @@ func FindByProductTitle(c *gin.Context) {
 	return
 }
 
-// post
+// @BasePath /v1
+// @Summary Create Product
+// @Schemes https
+// @Description Post- product create
+// @Tags PostProduct
+// @Accept json
+// @Produce json
+// @Success 200 {string}
+// @Router /v1/products/ [post]
 func PostProduct(c *gin.Context) {
 	product := pojo.Product{}
 	productdetail := pojo.Productdetails{}

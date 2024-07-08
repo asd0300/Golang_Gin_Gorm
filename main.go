@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	_ "GO_test/docs"
@@ -17,6 +18,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+//	@title			Swagger PoYa Site API
+//	@version		1.0
+//	@license.name	Apache 2.0
+
 func main() {
 	database.ConnectRedis()
 	app := setupRouter()
@@ -24,20 +29,26 @@ func main() {
 	if err2 != nil {
 		panic(err2)
 	}
+}
 
-	// client := postgres.DBClient{}
-	// client.Connect()
-	// // TestInsert(client)
-	// // test := postgres.Player{1, 40, "Ben2"}
-
-	// plays := ReadAll(client)
-	// // plays[0].Name = "shing2"
-	// // client.Update(plays[0])
-	// client.Delete(plays[0])
-	// ReadAll(client)
+func SetLog() *os.File {
+	currentDate := time.Now().Format("2006-01-02")
+	logDir := "./log"
+	logFile := fmt.Sprintf("%s/%s-gin.log", logDir, currentDate)
+	if err := os.MkdirAll(logDir, os.ModePerm); err != nil {
+		panic(err)
+	}
+	f, err := os.Create(logFile)
+	if err != nil {
+		panic(err)
+	}
+	return f
 }
 
 func setupRouter() *gin.Engine {
+	f := SetLog()
+	gin.DefaultWriter = f
+	gin.DefaultErrorWriter = f
 	app := gin.Default()
 	// app.Use(timeoutMiddleware(5 * time.Second))
 	app.Use(corsMiddleware())

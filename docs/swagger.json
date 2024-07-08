@@ -1,19 +1,32 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "title": "Swagger PoYa Site API",
+        "contact": {},
+        "license": {
+            "name": "Apache 2.0"
+        },
+        "version": "1.0"
     },
     "paths": {
         "/v1/products/": {
             "get": {
-                "description": "get string by ID",
-                "summary": "Show an account",
-                "operationId": "id",
+                "description": "Get all product items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FindAllProducts"
+                ],
+                "summary": "ProductSeries",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pojo.Product"
+                            "type": "string"
                         }
                     }
                 }

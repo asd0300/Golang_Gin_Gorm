@@ -18,15 +18,24 @@ definitions:
     type: object
 info:
   contact: {}
+  license:
+    name: Apache 2.0
+  title: Swagger PoYa Site API
+  version: "1.0"
 paths:
   /v1/products/:
     get:
-      description: get string by ID
-      operationId: id
+      consumes:
+      - application/json
+      description: Get all product items
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pojo.Product'
-      summary: Show an account
+            type: string
+      summary: ProductSeries
+      tags:
+      - FindAllProducts
 swagger: "2.0"

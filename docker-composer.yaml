@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   server:
-    image: g-server
+    image: asd0300/g-server
     working_dir: /app
     volumes:
       - .:/app
@@ -21,26 +21,26 @@ services:
     networks:
           Poya:
             ipv4_address: 172.19.0.3
-  # frontend:
-  #   image: nuxtapp
-  #   ports:
-  #     - "9004:3000"
-  #   # environment:
-  #   #   - Backend=http://172.19.0.3:4000
-  #   networks:
-  #         Poya:
-  #           ipv4_address: 172.19.0.2
   db:
     image: postgres:14-alpine
     ports:
-      - 5433:5432
+      - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=  # 設定超級用戶密碼
+      # 設定超級用戶密碼
+      - POSTGRES_PASSWORD=
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
+      - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
           Poya:
             ipv4_address: 172.19.0.4
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      Poya:
+        ipv4_address: 172.19.0.5
 networks:
   Poya:
     external: true
