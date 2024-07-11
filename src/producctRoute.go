@@ -1,6 +1,7 @@
 package src
 
 import (
+	// . "GO_test/middle/Redis"
 	"GO_test/middle/jwt"
 	"GO_test/service"
 
@@ -9,6 +10,7 @@ import (
 
 func AddProductRoute(r *gin.RouterGroup) {
 	product := r.Group("/products")
+	// product.GET("/", RedisMiddleware(database.GetRedisHelper().Client), service.FindAllProducts)
 	product.GET("/", service.FindAllProducts)
 	product.GET("/search/:title", service.FindByProductTitle)
 	product.POST("/search", service.FindByProductTitle)

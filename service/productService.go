@@ -39,29 +39,50 @@ func CreateProducts(c *gin.Context) {
 // @Router /v1/products/ [get]
 func FindAllProducts(c *gin.Context) {
 	redishelper = database.GetRedisHelper()
-	// _, err := redishelper.Ping(ctx).Result()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	val, err := redishelper.Get(ctx, "products").Result()
+	_, err := redishelper.Ping(ctx).Result()
+	if err != nil {
+		panic(err)
+	}
+	routeKey := c.FullPath()
+	val, err := redishelper.Get(ctx, routeKey).Result()
 	if val == "" {
-		fmt.Println("products does not exist, prepare re-generate")
+		fmt.Println("dataN not exist in redis, prepare re-generate")
 		products := pojo.FindAllProducts()
 		productJSON, err := json.Marshal(products)
 		if err != nil {
 			panic(err)
 		}
-		redishelper.Set(ctx, "products", productJSON, 10*time.Second)
+		redishelper.Set(ctx, routeKey, productJSON, 15*time.Second)
 		c.JSON(http.StatusOK, products)
 		return
 	} else {
-		var products []pojo.Product
-		err = json.Unmarshal([]byte(val), &products)
+		c.String(http.StatusOK, val)
+	}
+	// RedisProcess(c, func() interface{} {
+	// 	return pojo.FindAllProducts()
+	// })
+}
+
+func RedisProcess(c *gin.Context, dataFunc func() interface{}) {
+	redishelper = database.GetRedisHelper()
+	_, err := redishelper.Ping(ctx).Result()
+	if err != nil {
+		panic(err)
+	}
+	routeKey := c.FullPath()
+	val, err := redishelper.Get(ctx, routeKey).Result()
+	if val == "" {
+		fmt.Println("dataN not exist in redis, prepare re-generate")
+		data := dataFunc()
+		productJSON, err := json.Marshal(data)
 		if err != nil {
 			panic(err)
 		}
-		c.JSON(http.StatusOK, products)
+		redishelper.Set(ctx, routeKey, productJSON, 15*time.Second)
+		c.JSON(http.StatusOK, data)
+		return
+	} else {
+		c.String(http.StatusOK, val)
 	}
 }
 

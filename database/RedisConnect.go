@@ -12,13 +12,14 @@ type RedisHelper struct {
 
 var redisOnce sync.Once
 var redisHelper *RedisHelper
+var rdb *redis.Client
 
 func GetRedisHelper() *RedisHelper {
 	return redisHelper
 }
 
-func ConnectRedis() *redis.Client {
-	rdb := redis.NewClient(&redis.Options{
+func ConnectRedis() {
+	rdb = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
@@ -29,5 +30,4 @@ func ConnectRedis() *redis.Client {
 		rdh.Client = rdb
 		redisHelper = rdh
 	})
-	return rdb
 }

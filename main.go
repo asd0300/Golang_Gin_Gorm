@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	_ "GO_test/docs"
+	// _ "GO_test/docs"s
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
@@ -24,6 +24,7 @@ import (
 
 func main() {
 	database.ConnectRedis()
+	// redis := database.GetRedisHelper().Client
 	app := setupRouter()
 	err2 := app.Run(":4000")
 	if err2 != nil {
@@ -46,9 +47,9 @@ func SetLog() *os.File {
 }
 
 func setupRouter() *gin.Engine {
-	f := SetLog()
-	gin.DefaultWriter = f
-	gin.DefaultErrorWriter = f
+	// f := SetLog()
+	// gin.DefaultWriter = f
+	// gin.DefaultErrorWriter = f
 	app := gin.Default()
 	// app.Use(timeoutMiddleware(5 * time.Second))
 	app.Use(corsMiddleware())
